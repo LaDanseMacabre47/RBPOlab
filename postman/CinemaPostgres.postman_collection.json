@@ -1,0 +1,34 @@
+{
+  "info": {
+    "name": "CinemaPostgres",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Buy Ticket",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"screeningId\":1, \"customerId\":1, \"seatNumber\":1 }"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/tickets",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "tickets"
+          ]
+        }
+      }
+    }
+  ]
+}

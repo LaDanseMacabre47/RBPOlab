@@ -1,0 +1,1 @@
+# Cinema Postgres Demo\nSee src/main/resources/application.properties for env var names.\n

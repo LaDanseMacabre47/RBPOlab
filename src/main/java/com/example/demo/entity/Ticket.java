@@ -1,33 +1,22 @@
 package com.example.demo.entity;
-
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
-
 @Entity
+@Table(name = "tickets", uniqueConstraints = @UniqueConstraint(columnNames = {"screening_id","seat_number"}))
 public class Ticket {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false) @JoinColumn(name = "screening_id")
     private Screening screening;
-
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false) @JoinColumn(name = "customer_id")
     private Customer customer;
-
-    private Integer seatNumber; // optional
+    @Column(name = "seat_number") private Integer seatNumber;
     private Double price;
-    private LocalDateTime purchasedAt;
-
+    @Column(name = "purchased_at") private LocalDateTime purchasedAt;
     public Ticket() {}
-
     public Ticket(Screening screening, Customer customer, Integer seatNumber, Double price, LocalDateTime purchasedAt) {
-        this.screening = screening;
-        this.customer = customer;
-        this.seatNumber = seatNumber;
-        this.price = price;
-        this.purchasedAt = purchasedAt;
+        this.screening = screening; this.customer = customer; this.seatNumber = seatNumber; this.price = price; this.purchasedAt = purchasedAt;
     }
-
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public Screening getScreening() { return screening; }

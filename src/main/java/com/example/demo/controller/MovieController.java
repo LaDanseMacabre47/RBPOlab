@@ -1,42 +1,35 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.MovieDto;
 import com.example.demo.entity.Movie;
 import com.example.demo.service.MovieService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
+
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/movies")
 public class MovieController {
-    private final MovieService service;
-    public MovieController(MovieService service) { this.service = service; }
+    private final MovieService svc;
+    public MovieController(MovieService svc) { this.svc = svc; }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Movie create(@RequestBody MovieDto dto) {
-        return service.create(new Movie(dto.title(), dto.durationMinutes()));
+    public Movie create(@RequestBody Movie movie) {
+        return svc.create(movie);
     }
 
     @GetMapping
-    public List<Movie> all() { return service.all(); }
+    public List<Movie> all() { return svc.all(); }
 
     @GetMapping("/{id}")
-    public Movie get(@PathVariable Long id) {
-        return service.get(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-    }
+    public Movie get(@PathVariable Long id) { return svc.get(id).orElseThrow(); }
 
     @PutMapping("/{id}")
-    public Movie update(@PathVariable Long id, @RequestBody MovieDto dto) {
-        try {
-            return service.update(id, new Movie(dto.title(), dto.durationMinutes()));
-        } catch (IllegalArgumentException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        }
+    public Movie update(@PathVariable Long id, @RequestBody Movie movie) {
+        return svc.update(id, movie);
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) { service.delete(id); }
+    public void delete(@PathVariable Long id) { svc.delete(id); }
 }

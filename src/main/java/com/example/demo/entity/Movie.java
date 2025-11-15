@@ -1,22 +1,15 @@
 package com.example.demo.entity;
-
 import jakarta.persistence.*;
-import java.time.Duration;
-
 @Entity
+@Table(name = "movies", uniqueConstraints = @UniqueConstraint(columnNames = {"title"}))
 public class Movie {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    @Column(nullable = false)
     private String title;
-    private Integer durationMinutes; // duration in minutes
-
-    // constructors, getters, setters
+    private Integer durationMinutes;
     public Movie() {}
-    public Movie(String title, Integer durationMinutes) {
-        this.title = title;
-        this.durationMinutes = durationMinutes;
-    }
+    public Movie(String title, Integer durationMinutes) { this.title = title; this.durationMinutes = durationMinutes; }
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getTitle() { return title; }

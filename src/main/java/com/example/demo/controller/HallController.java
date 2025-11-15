@@ -1,11 +1,10 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.HallDto;
 import com.example.demo.entity.Hall;
 import com.example.demo.service.HallService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
+
 import java.util.List;
 
 @RestController
@@ -16,19 +15,16 @@ public class HallController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Hall create(@RequestBody HallDto dto) { return svc.create(new Hall(dto.name(), dto.capacity())); }
+    public Hall create(@RequestBody Hall hall) { return svc.create(hall); }
 
     @GetMapping
     public List<Hall> all() { return svc.all(); }
 
     @GetMapping("/{id}")
-    public Hall get(@PathVariable Long id) { return svc.get(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)); }
+    public Hall get(@PathVariable Long id) { return svc.get(id).orElseThrow(); }
 
     @PutMapping("/{id}")
-    public Hall update(@PathVariable Long id, @RequestBody HallDto dto) {
-        try { return svc.update(id, new Hall(dto.name(), dto.capacity())); }
-        catch (IllegalArgumentException e) { throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage()); }
-    }
+    public Hall update(@PathVariable Long id, @RequestBody Hall hall) { return svc.update(id, hall); }
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) { svc.delete(id); }

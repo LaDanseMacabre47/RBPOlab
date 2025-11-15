@@ -1,28 +1,22 @@
 package com.example.demo.entity;
-
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
-
 @Entity
+@Table(name = "screenings")
 public class Screening {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false) @JoinColumn(name = "movie_id")
     private Movie movie;
-
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false) @JoinColumn(name = "hall_id")
     private Hall hall;
-
+    @Column(name = "start_time", nullable = false)
     private LocalDateTime startTime;
-
     private Double price;
-
     public Screening() {}
     public Screening(Movie movie, Hall hall, LocalDateTime startTime, Double price) {
         this.movie = movie; this.hall = hall; this.startTime = startTime; this.price = price;
     }
-
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public Movie getMovie() { return movie; }

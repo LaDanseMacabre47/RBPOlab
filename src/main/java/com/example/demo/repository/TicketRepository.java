@@ -3,7 +3,13 @@ import com.example.demo.entity.Ticket;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
-    long countByScreeningId(Long screeningId);
-    boolean existsByScreeningIdAndSeatNumber(Long screeningId, Integer seatNumber);
-    List<Ticket> findByScreeningId(Long screeningId);
+
+    @Query("SELECT t.seatNumber, COUNT(t) FROM Ticket t GROUP BY t.seatNumber ORDER BY COUNT(t) DESC")
+    List<Object[]> popularSeats();
+
+    @Query("SELECT t.screening.movie.title, COUNT(t) FROM Ticket t GROUP BY t.screening.movie.title")
+    List<Object[]> bookingsPerMovie();
+
+    @Query("SELECT t.customer.name, COUNT(t) FROM Ticket t GROUP BY t.customer.name ORDER BY COUNT(t) DESC")
+    List<Object[]> topBuyers(Pageable pageable);
 }

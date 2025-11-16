@@ -10,52 +10,46 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/tickets")
+@RequestMapping("/tickets")
+@RequiredArgsConstructor
 public class TicketController {
-    private final TicketService svc;
-    public TicketController(TicketService svc) { this.svc = svc; }
 
-    // Купить билет
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public Ticket buy(@RequestBody TicketDto dto) {
-        return svc.create(dto.screeningId(), dto.customerId(), dto.seatNumber());
+    private final TicketRepository repo;
+    private final ScreeningRepository screeningRepo;
+
+    @GetMapping("/popular-seats")
+    public List<Object[]> popularSeats() {
+        return repo.popularSeats();
     }
 
-    // CRUD
-    @GetMapping
-    public List<Ticket> all() { return svc.all(); }
-
-    @GetMapping("/{id}")
-    public Ticket get(@PathVariable Long id) { return svc.getOrThrow(id); }
-
-    // Возврат билета (удаление)
-    @DeleteMapping("/{id}")
-    public void refund(@PathVariable Long id) { svc.refund(id); }
-
-    // Изменить место (seat)
-    @PutMapping("/{id}/seat")
-    public Ticket changeSeat(@PathVariable Long id, @RequestBody TicketDto dto) {
-        return svc.changeSeat(id, dto.seatNumber());
+    @GetMapping("/bookings-per-movie")
+    public List<Object[]> bookingsPerMovie() {
+        return repo.bookingsPerMovie();
     }
 
-    // Передать билет другому покупателю
-    @PostMapping("/{id}/transfer")
-    public Ticket transfer(@PathVariable Long id, @RequestBody Map<String,Long> body) {
-        Long newCustomerId = body.get("newCustomerId");
-        return svc.transfer(id, newCustomerId);
+    @GetMapping("/top-buyers")
+    public List<Object[]> topBuyers(@RequestParam(defaultValue = "5") int limit) {
+        return repo.topBuyers(PageRequest.of(0, limit));
     }
 
-    // Bulk reserve (резерв несколькими местами)
-    @PostMapping("/bulk")
-    public List<Ticket> bulkReserve(@RequestBody Map<String,Object> body) {
-        Long screeningId = ((Number) body.get("screeningId")).longValue();
-        Long customerId = ((Number) body.get("customerId")).longValue();
-        @SuppressWarnings("unchecked")
-        List<Integer> seats = (List<Integer>) body.get("seats");
-        return svc.bulkReserve(screeningId, customerId, seats);
-    }
+    @GetMapping("/screenings/high-occupancy")
+    public List<Long> highOccupancy(@RequestParam(defaultValue = "70") int percent) {
 
-    @GetMapping("/by-screening/{screeningId}")
-    public List<Ticket> byScreening(@PathVariable Long screeningId) { return svc.byScreening(screeningId); }
+        List<Object[]> stats = screeningRepo.occupancyStats();
+
+        List<Long> result = new ArrayList<>();
+
+        for (Object[] row : stats) {
+            Long screeningId = (Long) row[0];
+            Long booked = (Long) row[1];
+            Integer seats = (Integer) row[2];
+
+            double occupancy = (booked * 100.0) / seats;
+
+            if (occupancy >= percent)
+                result.add(screeningId);
+        }
+
+        return result;
+    }
 }

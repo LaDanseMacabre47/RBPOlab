@@ -8,28 +8,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/movies")
+@RequestMapping("/movies")
+@RequiredArgsConstructor
 public class MovieController {
-    private final MovieService svc;
-    public MovieController(MovieService svc) { this.svc = svc; }
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public Movie create(@RequestBody Movie movie) {
-        return svc.create(movie);
+    private final MovieRepository repo;
+
+    @GetMapping("/top-duration")
+    public List<Movie> topDuration(@RequestParam(defaultValue = "5") int limit) {
+        return repo.topLongest(PageRequest.of(0, limit));
     }
-
-    @GetMapping
-    public List<Movie> all() { return svc.all(); }
-
-    @GetMapping("/{id}")
-    public Movie get(@PathVariable Long id) { return svc.get(id).orElseThrow(); }
-
-    @PutMapping("/{id}")
-    public Movie update(@PathVariable Long id, @RequestBody Movie movie) {
-        return svc.update(id, movie);
-    }
-
-    @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) { svc.delete(id); }
 }
